@@ -1,4 +1,4 @@
-﻿﻿﻿import { createClient } from "@libsql/client"
+﻿﻿import { createClient } from "@libsql/client"
 
 let client: ReturnType<typeof createClient> | null = null
 
@@ -46,6 +46,9 @@ export interface MessageRow {
   userId: string
   content: string
   type: string
+| null
+  lunarDay: number | null
+  repeated: number
   createdAt: string
   userName: string
 }
@@ -151,7 +154,7 @@ export async function getPhotoById(id: string): Promise<PhotoRow | null> {
    userId: string
    title: string
    date: string
-   type: "TOGETHER" | "CUSTOM"
+   type: "TOGETHER" | "CUSTOM" | "BIRTHDAY"
    createdAt: string
    userName: string
  }
@@ -169,14 +172,18 @@ export async function getPhotoById(id: string): Promise<PhotoRow | null> {
    userId: string,
    title: string,
    date: string,
-   type: "TOGETHER" | "CUSTOM"
- ): Promise<AnniversaryRow> {
+   type: "TOGETHER" | "CUSTOM" | "BIRTHDAY",
+  isLunar?: boolean,
+  lunarMonth?: number | null,
+  lunarDay?: number | null,
+  repeated?: boolean
+): Promise<AnniversaryRow> {
    const db = getDb()
    const id = crypto.randomUUID()
    const now = new Date().toISOString()
    await db.execute({
-     sql: 'INSERT INTO "Anniversary" (id, userId, title, date, type, createdAt) VALUES (?, ?, ?, ?, ?, ?)',
-     args: [id, userId, title, date, type, now],
+     sql: 'INSERT INTO "Anniversary" (id, userId, title, date, type, isLunar, lunarMonth, lunarDay, repeated, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+     args: [id, userId, title, date, type, isLunar ? 1 : 0, lunarMonth ?? null, lunarDay ?? null, repeated ? 1 : 0, now],
    })
    const { rows } = await db.execute({
      sql: 'SELECT a.*, u.name as userName FROM "Anniversary" a JOIN "User" u ON u.id = a.userId WHERE a.id = ?',

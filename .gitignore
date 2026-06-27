@@ -53,3 +53,9 @@ src/app/_fixed.tsx
 # dev database
 prisma/dev.db
 prisma/*.db
+
+# temporary dev scripts
+_*.mjs
+
+# nested prisma artifacts
+prisma/prisma/

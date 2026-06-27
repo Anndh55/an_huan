@@ -25,7 +25,7 @@
      }
  
      const body = await request.json()
-     const { title, date, type } = body
+     const { title, date, type, isLunar, lunarMonth, lunarDay, repeated } = body
  
      if (!title || typeof title !== "string" || title.trim().length === 0) {
        return NextResponse.json({ error: "标题不能为空" }, { status: 400 })
@@ -35,7 +35,7 @@
        return NextResponse.json({ error: "日期不能为空" }, { status: 400 })
      }
  
-     if (!["TOGETHER", "CUSTOM"].includes(type)) {
+     if (!["TOGETHER", "CUSTOM", "BIRTHDAY"].includes(type)) {
        return NextResponse.json({ error: "无效的类型" }, { status: 400 })
      }
  

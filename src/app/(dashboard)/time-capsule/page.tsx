@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { format } from "date-fns"
 import { zhCN } from "date-fns/locale"
+import { Trash2, PencilLine } from "lucide-react"
 
 interface CapsuleListItem {
   id: string
@@ -373,7 +374,7 @@ export default function TimeCapsulePage() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   layout
-                  className={`relative rounded-xl border overflow-hidden cursor-pointer transition-all duration-300 ${
+                  className={`relative group rounded-xl border overflow-hidden cursor-pointer transition-all duration-300 ${
                     capsule.isLocked
                       ? "bg-gray-50/60 border-gray-200/40 hover:border-gray-300/50"
                       : "bg-gradient-to-br from-rose-50/80 to-amber-50/80 border-amber-200/30 hover:shadow-sm hover:shadow-amber-200/10"
@@ -422,14 +423,16 @@ export default function TimeCapsulePage() {
                           </span>
                         )}
                         {capsule.isSender && (
-                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200" onClick={(e) => e.stopPropagation()}>
                             <button onClick={() => handleEdit(capsule)}
-                              className="text-[10px] text-amber-500 hover:text-amber-600 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-md transition-colors">
-                              编辑
+                              className="w-6 h-6 flex items-center justify-center rounded-md bg-white/70 hover:bg-amber-100/80 text-amber-400 hover:text-amber-600 shadow-sm border border-amber-200/30 transition-all duration-200"
+                              title="编辑">
+                              <PencilLine className="w-3 h-3" strokeWidth={1.8} />
                             </button>
                             <button onClick={() => handleDelete(capsule)}
-                              className="text-[10px] text-red-400 hover:text-red-500 bg-red-50 hover:bg-red-100 px-2 py-0.5 rounded-md transition-colors">
-                              删除
+                              className="w-6 h-6 flex items-center justify-center rounded-md bg-white/70 hover:bg-red-100/80 text-red-300 hover:text-red-500 shadow-sm border border-red-200/30 transition-all duration-200"
+                              title="删除">
+                              <Trash2 className="w-3 h-3" strokeWidth={1.8} />
                             </button>
                           </div>
                         )}

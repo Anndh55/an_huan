@@ -6,6 +6,7 @@ import { useEffect, useState, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { format } from "date-fns"
 import { zhCN } from "date-fns/locale"
+import { Trash2 } from "lucide-react"
 
 interface Photo {
   id: string
@@ -301,53 +302,112 @@ export default function PhotosPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center backdrop-blur-sm"
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8"
             onClick={() => setLightboxPhoto(null)}
           >
+            {/* 半透明毛玻璃遮罩 — 隐约透出下方照片墙 */}
+            <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 250, damping: 22 }}
-              className="relative max-w-[90vw] max-h-[90vh]"
+              initial={{ scale: 0.92, opacity: 0, y: 16 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0, y: 16 }}
+              transition={{ type: "spring", stiffness: 280, damping: 24 }}
+              className="relative flex flex-col sm:flex-row max-w-4xl w-full max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl bg-white/10 group"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* 关闭按钮 */}
               <motion.button
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setLightboxPhoto(null)}
-                className="absolute -top-3 -right-3 w-9 h-9 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:bg-white z-10"
+                className="absolute top-3 right-3 z-20 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
               >
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </motion.button>
-              <img
-                src={lightboxPhoto.imageUrl}
-                alt={lightboxPhoto.caption || "照片"}
-                className="max-w-full max-h-[80vh] rounded-2xl shadow-2xl object-contain"
-              />
-              <div className="mt-4 text-center">
-                {lightboxPhoto.caption && (
-                  <p className="text-white/90 text-sm mb-1">{lightboxPhoto.caption}</p>
-                )}
-                <p className="text-white/50 text-xs">
-                  {lightboxPhoto.userName} · {format(new Date(lightboxPhoto.createdAt), "yyyy/MM/dd HH:mm", { locale: zhCN })}
-                </p>
-                {lightboxPhoto.userId === session?.user?.id && (
-                  <motion.button
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.25 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleDelete(lightboxPhoto)}
-                    className="mt-3 px-5 py-1.5 bg-red-500/60 hover:bg-red-500 text-white text-xs rounded-full backdrop-blur-sm transition-colors"
-                  >
-                    删除
-                  </motion.button>
-                )}
+
+              {/* 左侧：照片 */}
+              <div className="flex-1 min-w-0 bg-black/5 flex items-center justify-center">
+                <img
+                  src={lightboxPhoto.imageUrl}
+                  alt={lightboxPhoto.caption || "照片"}
+                  className="w-full h-full object-contain"
+                />
               </div>
+
+              {/* 右侧：毛玻璃信息面板 */}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full sm:w-72 lg:w-80 bg-slate-50/90 backdrop-blur-md flex flex-col relative overflow-hidden"
+              >
+                {/* 巨型艺术引言符号 */}
+                <div
+                  className="absolute -top-6 -left-3 text-[120px] leading-none text-rose-200/20 font-serif select-none pointer-events-none"
+                  aria-hidden="true"
+                >
+                  &ldquo;
+                </div>
+
+                {/* 面板内容 */}
+                <div className="flex-1 flex flex-col p-6">
+                  {/* 发布者信息 — 圆形单字头像 + 分级排版 */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25, duration: 0.35 }}
+                    className="flex items-center gap-3 mb-5"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-rose-200 to-rose-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+                      <span className="text-xs font-medium text-white/90">
+                        {lightboxPhoto.userName?.charAt(0) || "?"}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-slate-700 leading-tight">
+                        {lightboxPhoto.userName}
+                      </p>
+                      <p className="text-[10px] text-slate-400 font-light mt-0.5">
+                        记录于 {format(new Date(lightboxPhoto.createdAt), "yyyy/MM/dd", { locale: zhCN })}
+                      </p>
+                    </div>
+                  </motion.div>
+
+                  {/* 留言描述文字 — 杂志留白排版 */}
+                  {lightboxPhoto.caption && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.35, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                      className="flex-1"
+                    >
+                      <p className="text-sm text-slate-600 leading-relaxed tracking-wider font-light whitespace-pre-wrap">
+                        {lightboxPhoto.caption}
+                      </p>
+                    </motion.div>
+                  )}
+
+                  {/* 无描述时的弹性占位 */}
+                  {!lightboxPhoto.caption && <div className="flex-1" />}
+
+                  {/* 删除按钮 — 低调线性图标，Hover 卡片时才淡入 */}
+                  {lightboxPhoto.userId === session?.user?.id && (
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 self-end">
+                      <button
+                        onClick={() => handleDelete(lightboxPhoto)}
+                        className="w-7 h-7 flex items-center justify-center rounded-full bg-slate-200/50 hover:bg-red-100/80 text-slate-400 hover:text-red-400 transition-all duration-200"
+                        title="删除"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             </motion.div>
           </motion.div>
         )}

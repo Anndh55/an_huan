@@ -54,6 +54,10 @@ model Anniversary {
   title     String
   date      DateTime
   type      AnniversaryType
+  isLunar   Boolean          @default(false)
+  lunarMonth Int?
+  lunarDay   Int?
+  repeated  Boolean          @default(false)
   createdAt DateTime         @default(now())
 
   user User @relation(fields: [userId], references: [id])
@@ -62,6 +66,7 @@ model Anniversary {
 enum AnniversaryType {
   TOGETHER
   CUSTOM
+  BIRTHDAY
 }
 
 model TimeCapsule {

@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion, useInView, useMotionValue, useSpring, useTransform, AnimatePresence } from "motion/react";
 
 // ── Relationship start ────────────────────────────────────────
-const START_DATE = new Date("2026-05-25T23:47:20+08:00");
+const START_DATE = new Date("2026-05-25T00:00:00+08:00");
 
 // ── Inspirational quotes ──────────────────────────────────────
 const QUOTES = [
